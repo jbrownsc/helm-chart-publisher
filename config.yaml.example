@@ -1,0 +1,23 @@
+repos:
+  - name: stable
+    bucket: charts-bucket
+  - name: incubator
+    bucket: charts-bucket-incubator
+  - name: test
+    bucket: test-bucket
+    directory: test
+
+storage:
+  gcs: {} # uses GCloud Application Default Credentials
+  s3:
+    accessKey: AMAZON_ACCESS_KEY
+    secretKey: AMAZON_SECRET_KEY
+    region: us-west-2
+  swift:
+    username: SWIFT_USERNAME
+    password: SWIFT_USERNAME
+    tenant: some_tenant
+    authUrl: https://some-auth-url:5000/v2.0
+    endpointType: admin
+    container: "kube-charts"
+    insecureSkipVerify: false
