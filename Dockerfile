@@ -1,8 +1,16 @@
-FROM alpine:3.5
+FROM alpine:latest
 
-RUN apk add --no-cache ca-certificates
+RUN apk add --no-cache ca-certificates go git build-base
 
-COPY ./dist/helm-chart-publisher_linux-amd64 /helm-chart-publisher
+RUN mkdir -p /opt/sightmachine/go/src/github.com/luizbafilho
+COPY . /opt/sightmachine/go/src/github.com/luizbafilho/helm-chart-publisher
 
-CMD ["/helm-chart-publisher", "-c", "/etc/helm-chart-publisher/config.yaml"]
+ENV GOPATH=/opt/sightmachine/go
 
+WORKDIR /opt/sightmachine/go/src/github.com/luizbafilho/helm-chart-publisher
+
+RUN go get
+
+RUN go build
+
+# Docker cp /opt/sightmachine/go/src/github.com/luizbafilho/helm-chart-publisher/helm-chart-publisher .

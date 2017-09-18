@@ -102,6 +102,19 @@ func (p *Publisher) storeFile(r *Repo, filename string, content []byte) (*storag
 	return resp, nil
 }
 
+func (p *Publisher) GetFile(repoName string, filename string) (*storage.GetResponse, error) {
+  repo, err := p.repos.Get(repoName)
+  if err != nil {
+    return nil, err
+  }
+
+	resp, err := p.store.Get(repo.Bucket, repo.Path(filename))
+	if err != nil {
+		return nil, StorageErr{err, fmt.Sprintf("get file %s failed", filename)}
+	}
+	return resp, nil
+}
+
 func (p *Publisher) updateIndex(r *Repo, filename string, chartContent []byte) error {
 	// Creating a temporary index with the published chart
 	newIndex, err := p.createNewIndex(r, filename, chartContent)
@@ -154,7 +167,7 @@ func (p *Publisher) createNewIndex(r *Repo, filename string, chartContent []byte
 	if err != nil {
 		return nil, HelmErr{err, "Digest helm chart failed"}
 	}
-	index.Add(chart.Metadata, filename, p.store.GetURL(r.Bucket, r.Directory), hash)
+	index.Add(chart.Metadata, filename, p.config.GetBaseUrl() + "/" + r.Name + "/" + r.Directory, hash)
 
 	return index, nil
 }

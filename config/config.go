@@ -15,6 +15,7 @@ func init() {
 }
 
 func initViper() {
+  viper.SetDefault("base_url", "http://localhost:8080")
 	// viper.SetConfigName("config")        // name of config file (without extension)
 	// viper.AddConfigPath("/etc/" + APP)   // path to look for the config file in
 	// viper.AddConfigPath("$HOME/." + APP) // call multiple times to add many search paths
@@ -47,6 +48,10 @@ func GetStorage() (string, Config) {
 
 func GetRepos() interface{} {
 	return viper.Get("repos")
+}
+
+func (c *Config) GetBaseUrl() string {
+	return viper.GetString("base_url")
 }
 
 func ReadConfigFile(configFile string) error {

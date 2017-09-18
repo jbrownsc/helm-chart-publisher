@@ -1,0 +1,7 @@
+FROM alpine:latest
+
+RUN apk add --no-cache ca-certificates
+
+COPY ./helm-chart-publisher /
+
+CMD ["/helm-chart-publisher", "-c", "/etc/helm-chart-publisher/config.yaml"]

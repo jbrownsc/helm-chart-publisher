@@ -71,7 +71,7 @@ func (s *S3Store) Put(bucket string, path string, content []byte) (*storage.PutR
 		Bucket:      aws.String(bucket),
 		Key:         aws.String(path),
 		Body:        bytes.NewReader(content),
-		ACL:         aws.String("public-read"),
+		ACL:         aws.String("private"),
 		ContentType: aws.String("application/gzip"),
 	}
 
