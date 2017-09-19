@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{ template "fullname" . }}
+  name: {{ template "name" . }}
   labels:
     app: {{ template "name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
@@ -14,24 +14,42 @@ spec:
       labels:
         app: {{ template "name" . }}
         release: {{ .Release.Name }}
+      annotations:
+          checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: AWS_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "name" . }}
+                  key:  aws_access_key
+            - name: AWS_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "name" . }}
+                  key: aws_secret_key
           ports:
             - containerPort: {{ .Values.service.internalPort }}
           livenessProbe:
-            httpGet:
-              path: /
+            tcpSocket:
               port: {{ .Values.service.internalPort }}
           readinessProbe:
-            httpGet:
-              path: /
+            tcpSocket:
               port: {{ .Values.service.internalPort }}
+          volumeMounts:
+            - name: {{ template "name" . }}
+              mountPath: /etc/helm-chart-publisher
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- if .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
     {{- end }}
+      volumes:
+        - name: {{ template "name" . }}
+          configMap:
+            name: {{ template "name" . }}

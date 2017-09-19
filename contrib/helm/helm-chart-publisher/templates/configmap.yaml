@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "name" . }}
+  labels:
+    app: {{ template "name" . }}
+data:
+{{ toYaml .Values.helm_chart_publisher | indent 2 }}
